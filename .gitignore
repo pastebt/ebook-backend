@@ -1,4 +1,8 @@
-*.py[co]
+*.o
+*.obj
+*.pdb
+*.ilk
+*.res
 
 # Packages
 *.egg
