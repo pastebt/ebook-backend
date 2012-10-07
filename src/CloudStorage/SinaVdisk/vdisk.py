@@ -18,6 +18,7 @@ class vdisk_api():
         self.password=password
         self.token=''
         self.app_type=app_type
+        self.dologid=None
         
     def get_token(self):
         url="http://openapi.vdisk.me/?m=auth&a=get_token"
@@ -31,13 +32,31 @@ class vdisk_api():
                   appkey=App_Key,time=t,
                   signature=signature,
                   app_type=self.app_type)
-        response=requests.post(url,data1)
-        if response.json['err_code']==0:
-            self.token=response.json['token']
+        response=requests.post(url,data)
+        ## need handle response.json=None
+        logging.error("%s"%response.json)
+        if response.json.get('err_code')==0:
+            self.token=response.json['data']['token']
         else:
             logging.error(response.json['err_msg'])
 
+    #keep alive
     def keep(self):
+        url="http://openapi.vdisk.me/?a=keep"
+        data=dict(token=self.token,dilogid=self.dologid) if self.dologid!=None else dict(token=self.token)
+        response=requests.post(url,data)
+        logging.error("%s,%s"%(response.json,type(response.json)))
+        if response.json['err_code']=='0':
+            self.dologid=response.json["dologid"]
+            
+    def get_quota(self):
+        url="http://openapi.vdisk.me/?m=file&a=get_quota"
+        pass
+
+    def keep_token(self):
+        url="http://openapi.vdisk.me/?m=user&a=keep_token"
+        pass
+
         
         
 
