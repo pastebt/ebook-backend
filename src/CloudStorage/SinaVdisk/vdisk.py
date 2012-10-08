@@ -84,6 +84,76 @@ class VdiskUser():
                     logging.error("%s"%response.json['err_msg'])
                 break
 
+# handle file and dir etc.
+class VdiskFile(VdiskUser):
+    
+    ## upload and share,a file size must less than 10M
+    ## there is another upload_file in vdisk api.but it donot share
+    def upload_file(self,afile,dir_id=0,cover=None):
+        url="http://openapi.vdisk.me/?m=file&a=upload_share_file"
+        if cover is None:
+            cover="yes"
+        files={'file':open(afile,'r')}
+        data=dict(token=self.token,dir_id=dir_id,cover=cover,dologid=self.dologid)
+        while True:
+            response=requests.post(url,data=data,files=files)
+            if response.json is not None:
+                logging.error('%s'%response.json)
+                if response.json['err_code']==0:
+                    self.dilogid=response.json['dologid']
+                else:
+                    logging.error("%s"%(response.json['err_msg']))
+            break
+    def create_dir():
+        url="http://openapi.vdisk.me/?m=dir&a=create_dir"
+        pass
+    
+    def get_dir_list():
+        url="http://openapi.vdisk.me/?m=dir&a=getlist"
+        pass
+    
+    def upload_with_sha1():
+        url="http://openapi.vdisk.me/?m=file&a=upload_with_sha1"
+        pass
+    
+    def get_file_info():
+        url="http://openapi.vdisk.me/?m=file&a=get_file_info"
+        pass
+    
+    def delete_dir():
+        url="http://openapi.vdisk.me/?m=dir&a=delete_dir"
+        pass
+    
+    def delete_file():
+        url="http://openapi.vdisk.me/?m=file&a=delete_file"
+        pass
+    
+    def copy_file():
+        url="http://openapi.vdisk.me/?m=file&a=copy_file"
+        pass
+    
+    def move_file():
+        url="http://openapi.vdisk.me/?m=file&a=move_file"
+        pass
+    def rename_file():
+        url="http://openapi.vdisk.me/?m=file&a=rename_file"
+        pass
+    def rename_dir():
+        url="http://openapi.vdisk.me/?m=dir&a=rename_dir"
+        pass
+    def move_dir():
+        url="http://openapi.vdisk.me/?m=dir&a=move_dir"
+        pass
+    def share_file():
+        url="http://openapi.vdisk.me/?m=file&a=share_file"
+        pass
+    def cancel_share_file():
+        url="http://openapi.vdisk.me/?m=file&a=cancel_share_file"
+        pass
+    def get_recycle_list():
+        url="http://openapi.vdisk.me/?m=recycle&a=get_list"
+        pass
+    
 
 parser=argparse.ArgumentParser(description="Use command line to control vdisk")
 group=parser.add_mutually_exclusive_group()
