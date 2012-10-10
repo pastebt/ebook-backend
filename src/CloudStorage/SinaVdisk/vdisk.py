@@ -14,6 +14,9 @@ import requests
 App_Key="2000904490"
 App_Secret="0e4514df35df979dd1e58681319246e7"
 
+logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s',
+                    level=logging.DEBUG,datefmt='%Y/%m/%d %H:%M:%S')
+
 ## a wrapper function to request particular data to particular url
 ## logging the json info
 ## and return the reponse.json
