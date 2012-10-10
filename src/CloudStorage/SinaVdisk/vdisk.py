@@ -39,7 +39,7 @@ def Vrequest(method,**kwargs):
         if response.json is not None:
             returnedJson=response.json
             if returnedJson.get("err_code")==0:
-                logging.info("success,respon.json is: "%returnedJson)
+                logging.info("success.")
                 return returnedJson
             elif returnedJson.get("err_code")==602:
                 logging.warning("dolog old,set the new dolog and request again")
