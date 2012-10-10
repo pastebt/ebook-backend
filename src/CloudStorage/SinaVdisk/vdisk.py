@@ -34,16 +34,17 @@ def Vrequest(method,**kwargs):
     while True:
         response=arequest(**kwargs)
         if response.json is not None:
-            if response.json.get("err_code")==0:
-                logging.info("success,respon.json is: "%response.json)
-                return response.json
-            elif response.json.get("err_code")==602:
+            returnedJson=response.json
+            if returnedJson.get("err_code")==0:
+                logging.info("success,respon.json is: "%returnedJson)
+                return returnedJson
+            elif returnedJson.get("err_code")==602:
                 logging.warning("dolog old,set the new dolog and request again")
-                self.dologid=response.json["dologid"]
+                self.dologid=returnedJson["dologid"]
             else:
-                logging.error("fail,response.json is "%response.json)
-                logging.error("error code: %s,error message: %s"%(response.json["err_code"],response.json["err_msg"]))
-                return response.json
+                logging.error("fail,returnedJson is "%returnedJson)
+                logging.error("error code: %s,error message: %s"%(returnedJson["err_code"],returnedJson["err_msg"]))
+                return returnedJson
         break
 
 
@@ -67,8 +68,8 @@ class VdiskUser():
                   appkey=App_Key,time=t,
                   signature=signature,
                   app_type=self.app_type)
-        returnJson=Vrequest("POST",**dict(url=url,data=data))
-        self.token=returnJson["data"]["token"]
+        returnedJson=Vrequest("POST",**dict(url=url,data=data))
+        self.token=returnedJson["data"]["token"]
 
     #keep alive
     def keep(self):
@@ -76,10 +77,10 @@ class VdiskUser():
         data=dict(token=self.token,dilogid=self.dologid) if self.dologid!=None else dict(token=self.token)
         while True:
             response=requests.post(url,data)
-            logging.error("%s,%s"%(response.json,type(response.json)))
-            if response.json is not None:
-                if response.json['err_code'] in [0,602]:
-                    self.dologid=response.json["dologid"]
+            logging.error("%s,%s"%(returnedJson,type(returnedJson)))
+            if returnedJson is not None:
+                if returnedJson['err_code'] in [0,602]:
+                    self.dologid=returnedJson["dologid"]
                 break
             
     def get_quota(self):
@@ -87,11 +88,11 @@ class VdiskUser():
         data=dict(token=self.token)
         while True:
             response=requests.post(url,data)
-            logging.error("%s"%response.json)
-            if response.json is not None:
-                if response.json['err_code']==0:
-                    logging.warning('used: %s'%response.json['data']['used'])
-                    logging.warning('total: %s'%response.json['data']['total'])
+            logging.error("%s"%returnedJson)
+            if returnedJson is not None:
+                if returnedJson['err_code']==0:
+                    logging.warning('used: %s'%returnedJson['data']['used'])
+                    logging.warning('total: %s'%returnedJson['data']['total'])
                 break
 
     # a token will expire after 15 minutes,so keep_token() should run about 10 to 15 minutes
@@ -100,12 +101,12 @@ class VdiskUser():
         data=dict(token=self.token,dologid=self.dologid)
         while True:
             response=requests.post(url,data)
-            logging.error("%s"%response.json)
-            if response.json is not None:
-                if response.json['err_code']==0:
-                    self.dologid=response.json['dologid']
+            logging.error("%s"%returnedJson)
+            if returnedJson is not None:
+                if returnedJson['err_code']==0:
+                    self.dologid=returnedJson['dologid']
                 else:
-                    logging.error("%s"%response.json['err_msg'])
+                    logging.error("%s"%returnedJson['err_msg'])
                 break
 
 # handle file and dir etc.
@@ -121,12 +122,12 @@ class VdiskFile(VdiskUser):
         data=dict(token=self.token,dir_id=dir_id,cover=cover,dologid=self.dologid)
         while True:
             response=requests.post(url,data=data,files=files)
-            if response.json is not None:
-                logging.error('%s'%response.json)
-                if response.json['err_code']==0:
-                    self.dilogid=response.json['dologid']
+            if returnedJson is not None:
+                logging.error('%s'%returnedJson)
+                if returnedJson['err_code']==0:
+                    self.dilogid=returnedJson['dologid']
                 else:
-                    logging.error("%s"%(response.json['err_msg']))
+                    logging.error("%s"%(returnedJson['err_msg']))
             break
         
     def create_dir(self,create_name,parent_id=0):
@@ -134,12 +135,12 @@ class VdiskFile(VdiskUser):
         data=dict(token=self.token,create_name=create_name,parent_id=parent_id,dologid=dologid)
         while True:
             response=requests.post(url,data)
-            if response.json is not None:
-                logging.error('%s'%response.json)
-                if response.json['err_code']==0:
-                    self.dilogid=response.json['dologid']
+            if returnedJson is not None:
+                logging.error('%s'%returnedJson)
+                if returnedJson['err_code']==0:
+                    self.dilogid=returnedJson['dologid']
                 else:
-                    logging.error("%s"%(response.json['err_msg']))
+                    logging.error("%s"%(returnedJson['err_msg']))
             break
     
     def get_dir_list(self,dir_id=0):
@@ -147,12 +148,12 @@ class VdiskFile(VdiskUser):
         data=dict(token=self.token,dir_id=dir_id)
         while True:
             response=requests.post(url,data)
-            if response.json is not None:
-                logging.error('%s'%response.json)
-                if response.json['err_code']==0:
-                    self.dilogid=response.json['dologid']
+            if returnedJson is not None:
+                logging.error('%s'%returnedJson)
+                if returnedJson['err_code']==0:
+                    self.dilogid=returnedJson['dologid']
                 else:
-                    logging.error("%s"%(response.json['err_msg']))
+                    logging.error("%s"%(returnedJson['err_msg']))
             break
 
     
