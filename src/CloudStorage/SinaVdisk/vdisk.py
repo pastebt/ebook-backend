@@ -104,13 +104,33 @@ class VdiskFile(VdiskUser):
                 else:
                     logging.error("%s"%(response.json['err_msg']))
             break
-    def create_dir():
+        
+    def create_dir(self,create_name,parent_id=0):
         url="http://openapi.vdisk.me/?m=dir&a=create_dir"
-        pass
+        data=dict(token=self.token,create_name=create_name,parent_id=parent_id,dologid=dologid)
+        while True:
+            response=requests.post(url,data)
+            if response.json is not None:
+                logging.error('%s'%response.json)
+                if response.json['err_code']==0:
+                    self.dilogid=response.json['dologid']
+                else:
+                    logging.error("%s"%(response.json['err_msg']))
+            break
     
-    def get_dir_list():
+    def get_dir_list(self,dir_id=0):
         url="http://openapi.vdisk.me/?m=dir&a=getlist"
-        pass
+        data=dict(token=self.token,dir_id=dir_id)
+        while True:
+            response=requests.post(url,data)
+            if response.json is not None:
+                logging.error('%s'%response.json)
+                if response.json['err_code']==0:
+                    self.dilogid=response.json['dologid']
+                else:
+                    logging.error("%s"%(response.json['err_msg']))
+            break
+
     
     def upload_with_sha1():
         url="http://openapi.vdisk.me/?m=file&a=upload_with_sha1"
