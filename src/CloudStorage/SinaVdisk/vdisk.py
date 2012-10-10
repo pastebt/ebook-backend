@@ -6,7 +6,6 @@ import hmac
 import hashlib
 import time
 import logging
-import sys
 
 ## easy_install requests
 ## or we should add https://github.com/kennethreitz/requests.git as a submodule.
@@ -15,6 +14,39 @@ import requests
 App_Key="2000904490"
 App_Secret="0e4514df35df979dd1e58681319246e7"
 
+## a wrapper function to request particular data to particular url
+## logging the json info
+## and return the reponse.json
+def Vrequest(method,**kwargs):
+    if method=="GET":
+        ## be sure kwargs only certain url
+        if len(kwargs)==1 and kwargs.get("url") is not None:
+            arequest=requests.get
+        else:
+            logging.error("wrong url in GET: %s"%kwargs)
+            return
+    elif method=="POST":
+        arequest=requests.post
+    else:
+        logging.error("wrong method: %s"%method)
+        return
+    ## sometimes the api return nothing.
+    while True:
+        response=arequest(**kwargs)
+        if response.json is not None:
+            if response.json.get("err_code")==0:
+                logging.info("success,respon.json is: "%response.json)
+                return response.json
+            elif response.json.get("err_code")==602:
+                logging.warning("dolog old,set the new dolog and request again")
+                self.dologid=response.json["dologid"]
+            else:
+                logging.error("fail,response.json is "%response.json)
+                logging.error("error code: %s,error message: %s"%(response.json["err_code"],response.json["err_msg"]))
+                return response.json
+        break
+
+
 class VdiskUser():
     def __init__(self,account,password,app_type=None):
         self.account=account
@@ -22,7 +54,7 @@ class VdiskUser():
         self.token=''
         self.app_type=app_type
         self.dologid=None
-        
+
     def get_token(self):
         url="http://openapi.vdisk.me/?m=auth&a=get_token"
         t=int(time.time())
@@ -35,17 +67,9 @@ class VdiskUser():
                   appkey=App_Key,time=t,
                   signature=signature,
                   app_type=self.app_type)
-        #need handle response.json=None
-        while True:
-            response=requests.post(url,data)
-            logging.error("%s"%response.json)
-            if response.json is not None:
-                if response.json.get('err_code')==0:
-                    self.token=response.json['data']['token']
-                else:
-                    logging.error(response.json['err_msg'])
-                break
-            
+        returnJson=Vrequest("POST",**dict(url=url,data=data))
+        self.token=returnJson["data"]["token"]
+
     #keep alive
     def keep(self):
         url="http://openapi.vdisk.me/?a=keep"
