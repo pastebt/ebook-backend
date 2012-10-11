@@ -15,7 +15,7 @@ App_Key="2000904490"
 App_Secret="0e4514df35df979dd1e58681319246e7"
 
 logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s',
-                    level=logging.DEBUG,datefmt='%Y/%m/%d %H:%M:%S')
+                    level=logging.DEBUG,datefmt='%m/%d %H:%M:%S')
 
 ## a wrapper function to request particular data to particular url
 ## logging the json info
@@ -110,7 +110,7 @@ class VdiskFile(VdiskUser):
     ## upload and share,a file size must less than 10M
     ## there is another upload_file in vdisk api.but it donot share
     def upload_file(self,afile,dir_id=0,cover=None):
-        url="http://openapi.vdisk.me/?m=file&a=upload_share_file"
+        url="http://openapi.vdisk.me/?m=file&a=upload_file"
         if cover is None:
             cover="yes"
         files={'file':open(afile,'r')}
@@ -170,7 +170,7 @@ class VdiskFile(VdiskUser):
             self.recycle_del_file(fid)
             return
     
-    def upload_with_sha1(dir_id,sha1,file_name):
+    def upload_with_sha1(sha1,file_name,dir_id=0):
         url="http://openapi.vdisk.me/?m=file&a=upload_with_sha1"
         data=dict(token=self.token,dir_id=dir_id,sha1=sha1,
                   file_name=file_name,dologid=self.dologid)
