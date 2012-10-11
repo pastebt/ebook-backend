@@ -46,6 +46,8 @@ class VdiskUser():
         self.token=None
         self.app_type=app_type
         self.dologid=None
+        self.used=None
+        self.total=None
 
     def is_loged(self):
         return self.token is not None
@@ -61,7 +63,7 @@ class VdiskUser():
     def get_token(self):
         url="http://openapi.vdisk.me/?m=auth&a=get_token"
         t=int(time.time())
-        if self.app_type:
+        if self.app_type is None:
             self.app_type="local"
         signature=hmac.new(App_Secret,"account="+self.account
                            +"&appkey="+App_Key+"&password="+
@@ -75,43 +77,31 @@ class VdiskUser():
         returnedJson=Vrequest("POST",**dict(url=url,data=data))
         self.token=returnedJson["data"]["token"]
 
-    #keep alive
+    ## keep alive
     def keep(self):
         url="http://openapi.vdisk.me/?a=keep"
-        data=dict(token=self.token,dilogid=self.dologid) if self.dologid!=None else dict(token=self.token)
-        while True:
-            response=requests.post(url,data)
-            logging.error("%s,%s"%(returnedJson,type(returnedJson)))
-            if returnedJson is not None:
-                if returnedJson['err_code'] in [0,602]:
-                    self.dologid=returnedJson["dologid"]
-                break
+        data=dict(token=self.token,dilogid=self.dologid) if self.dologid!=None \
+              else dict(token=self.token)
+        returnedJson=Vrequest("POST",**dict(url=url,data=data))
+        if returnedJson['err_code'] in [0,602]:
+            self.dologid=returnedJson['dologid']
             
     def get_quota(self):
         url="http://openapi.vdisk.me/?m=file&a=get_quota"
         data=dict(token=self.token)
-        while True:
-            response=requests.post(url,data)
-            logging.error("%s"%returnedJson)
-            if returnedJson is not None:
-                if returnedJson['err_code']==0:
-                    logging.warning('used: %s'%returnedJson['data']['used'])
-                    logging.warning('total: %s'%returnedJson['data']['total'])
-                break
+        returnedJson=Vrequest("POST",**dict(url=url,data=data))
+        self.used=returnedJson['data']['used']
+        self.total=returnedJson['data']['total']
+        logging.warning('used: %s'%returnedJson['data']['used'])
+        logging.warning('total: %s'%returnedJson['data']['total'])
 
-    # a token will expire after 15 minutes,so keep_token() should run about 10 to 15 minutes
+    ## a token will expire after 15 minutes,
+    ## so keep_token() should run about 10 to 15 minutes
     def keep_token(self):
         url="http://openapi.vdisk.me/?m=user&a=keep_token"
         data=dict(token=self.token,dologid=self.dologid)
-        while True:
-            response=requests.post(url,data)
-            logging.error("%s"%returnedJson)
-            if returnedJson is not None:
-                if returnedJson['err_code']==0:
-                    self.dologid=returnedJson['dologid']
-                else:
-                    logging.error("%s"%returnedJson['err_msg'])
-                break
+        returnedJson=Vrequest("POST",**dict(url=url,data=data))
+        self.check_dologid(returnedJson)
 
 # handle file and dir etc.
 class VdiskFile(VdiskUser):
@@ -123,47 +113,27 @@ class VdiskFile(VdiskUser):
         if cover is None:
             cover="yes"
         files={'file':open(afile,'r')}
-        data=dict(token=self.token,dir_id=dir_id,cover=cover,dologid=self.dologid)
-        while True:
-            response=requests.post(url,data=data,files=files)
-            if returnedJson is not None:
-                logging.error('%s'%returnedJson)
-                if returnedJson['err_code']==0:
-                    self.dilogid=returnedJson['dologid']
-                else:
-                    logging.error("%s"%(returnedJson['err_msg']))
-            break
+        data=dict(token=self.token,dir_id=dir_id,
+                  cover=cover,dologid=self.dologid)
+        returnedJson=Vrequest('POST',**dict(url=url,data=data,files=files))
+        if not self.check_dologid(returnedJson):
+            self.upload_file(afile,dir_id,cover)
         
     def create_dir(self,create_name,parent_id=0):
         url="http://openapi.vdisk.me/?m=dir&a=create_dir"
-        data=dict(token=self.token,create_name=create_name,parent_id=parent_id,dologid=dologid)
-        while True:
-            response=requests.post(url,data)
-            if returnedJson is not None:
-                logging.error('%s'%returnedJson)
-                if returnedJson['err_code']==0:
-                    self.dilogid=returnedJson['dologid']
-                else:
-                    logging.error("%s"%(returnedJson['err_msg']))
-            break
-    
+        data=dict(token=self.token,create_name=create_name,
+                  parent_id=parent_id,dologid=self.dologid)
+        returnedJson=Vrequest("POST",**dict(url=url,data=data))
+        if not self.check_dologid(returnedJson):
+            self.upload_file(create_name,parent_id)
+
+    ## seems a bug in vdisk api here.dont call this function
     def get_dir_list(self,dir_id=0):
         url="http://openapi.vdisk.me/?m=dir&a=getlist"
         data=dict(token=self.token,dir_id=dir_id)
-        while True:
-            response=requests.post(url,data)
-            if returnedJson is not None:
-                logging.error('%s'%returnedJson)
-                if returnedJson['err_code']==0:
-                    self.dilogid=returnedJson['dologid']
-                else:
-                    logging.error("%s"%(returnedJson['err_msg']))
-            break
-
-    
-    def upload_with_sha1():
-        url="http://openapi.vdisk.me/?m=file&a=upload_with_sha1"
-        pass
+        returnedJson=Vrequest("POST",**dict(url=url,data=data))
+        if not self.check_dologid(returnedJson):
+            self.upload_file(create_name,dir_id)
     
     def get_file_info():
         url="http://openapi.vdisk.me/?m=file&a=get_file_info"
@@ -202,8 +172,11 @@ class VdiskFile(VdiskUser):
     def get_recycle_list():
         url="http://openapi.vdisk.me/?m=recycle&a=get_list"
         pass
-    
+    def upload_with_sha1():
+        url="http://openapi.vdisk.me/?m=file&a=upload_with_sha1"
+        pass
 
+"""
 parser=argparse.ArgumentParser(description="Use command line to control vdisk")
 group=parser.add_mutually_exclusive_group()
 group.add_argument("--upload","-U",help="upload a file")
@@ -220,3 +193,4 @@ elif args.query:
     print args.query
 else:
     pass
+"""
