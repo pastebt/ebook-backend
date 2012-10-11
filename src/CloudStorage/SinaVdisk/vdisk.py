@@ -40,6 +40,7 @@ def Vrequest(method,**kwargs):
                 return returnedJson
 
 class VdiskUser():
+    
     def __init__(self,account,password,app_type=None):
         self.account=account
         self.password=password
@@ -126,55 +127,66 @@ class VdiskFile(VdiskUser):
         returnedJson=Vrequest("POST",**dict(url=url,data=data))
         if not self.check_dologid(returnedJson):
             self.upload_file(create_name,parent_id)
-
-    ## seems a bug in vdisk api here.dont call this function
+            return
+        
     def get_dir_list(self,dir_id=0):
         url="http://openapi.vdisk.me/?m=dir&a=getlist"
         data=dict(token=self.token,dir_id=dir_id)
         returnedJson=Vrequest("POST",**dict(url=url,data=data))
         if not self.check_dologid(returnedJson):
-            self.upload_file(create_name,dir_id)
-    
-    def get_file_info():
+            self.get_dir_list(dir_id)
+            return
+                    
+    def get_file_info(fid):
         url="http://openapi.vdisk.me/?m=file&a=get_file_info"
-        pass
-    
-    def delete_dir():
+        data=dict(token=self.token,fid=fid,dologid=self.dologid)
+        returnedJson=Vrequest("POST",**dict(url=url,data=data))
+        if not self.check_dologid(returnedJson):
+            self.get_file_info(fid)
+            return
+        logging.info('%s'%returnedJson['data'])
+            
+    def delete_dir(dir_id):
         url="http://openapi.vdisk.me/?m=dir&a=delete_dir"
-        pass
+        data=dict(token=self.token,dir_id=dir_id,dologid=self.dologid)
+        returnedJson=Vrequest("POST",**dict(url=url,data=data))
+        if not self.check_dologid(returnedJson):
+            self.delete_dir(dir_id)
+            return
     
-    def delete_file():
+    def delete_file(fid):
         url="http://openapi.vdisk.me/?m=file&a=delete_file"
-        pass
+        data=dict(token=self.token,fid=fid,dologid=self.dologid)
+        returnedJson=Vrequest("POST",**dict(url=url,data=data))
+        if not self.check_dologid(returnedJson):
+            self.delete_file(fid)
+            return
+
+    def recycle_del_file(fid):
+        url='http://openapi.vdisk.me/?m=recycle&a=delete_file'
+        data=dict(token=self.token,fid=fid,dologid=self.dologid)
+        returnedJson=Vrequest("POST",**dict(url=url,data=data))
+        if not self.check_dologid(returnedJson):
+            self.recycle_del_file(fid)
+            return
     
-    def copy_file():
-        url="http://openapi.vdisk.me/?m=file&a=copy_file"
-        pass
-    
-    def move_file():
-        url="http://openapi.vdisk.me/?m=file&a=move_file"
-        pass
-    def rename_file():
-        url="http://openapi.vdisk.me/?m=file&a=rename_file"
-        pass
-    def rename_dir():
-        url="http://openapi.vdisk.me/?m=dir&a=rename_dir"
-        pass
-    def move_dir():
-        url="http://openapi.vdisk.me/?m=dir&a=move_dir"
-        pass
-    def share_file():
-        url="http://openapi.vdisk.me/?m=file&a=share_file"
-        pass
-    def cancel_share_file():
-        url="http://openapi.vdisk.me/?m=file&a=cancel_share_file"
-        pass
-    def get_recycle_list():
-        url="http://openapi.vdisk.me/?m=recycle&a=get_list"
-        pass
-    def upload_with_sha1():
+    def upload_with_sha1(dir_id,sha1,file_name):
         url="http://openapi.vdisk.me/?m=file&a=upload_with_sha1"
-        pass
+        data=dict(token=self.token,dir_id=dir_id,sha1=sha1,
+                  file_name=file_name,dologid=self.dologid)
+        returnedJson=Vrequest("POST",**dict(url=url,data=data))
+        if not self.check_dologid(returnedJson):
+            self.upload_with_sha1(dir_id,sha1,file_name)
+            return
+        
+    def share_file(fid):
+        url="http://openapi.vdisk.me/?m=file&a=share_file"
+        data=dict(token=self.token,fid=fid,dologid=self.dologid)
+        returnedJson=Vrequest("POST",**dict(url=url,data=data))
+        if not self.check_dologid(returnedJson):
+            self.share_file(fid)
+            return
+            
 
 """
 parser=argparse.ArgumentParser(description="Use command line to control vdisk")
