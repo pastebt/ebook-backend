@@ -21,51 +21,52 @@ logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s',
 ## logging the json info
 ## and return the reponse.json
 def Vrequest(method,**kwargs):
-    if method=="GET":
-        ## be sure kwargs only certain url
-        if len(kwargs)==1 and kwargs.get("url") is not None:
-            arequest=requests.get
-        else:
-            logging.error("wrong url in GET: %s"%kwargs)
-            return
-    elif method=="POST":
-        arequest=requests.post
-    else:
+    if method not in ['GET','POST']:
         logging.error("wrong method: %s"%method)
         return
     ## sometimes the api return nothing.
     while True:
-        response=arequest(**kwargs)
+        response=requests.request(method.lower(),**kwargs)
         if response.json is not None:
             returnedJson=response.json
             if returnedJson.get("err_code")==0:
-                logging.info("success.")
+                logging.info("success.%s"%returnedJson)
                 return returnedJson
-            elif returnedJson.get("err_code")==602:
-                logging.warning("dolog old,set the new dolog and request again")
-                self.dologid=returnedJson["dologid"]
             else:
                 logging.error("fail,returnedJson is "%returnedJson)
-                logging.error("error code: %s,error message: %s"%(returnedJson["err_code"],returnedJson["err_msg"]))
+                logging.error("error code: %s,error message: %s"
+                              %(returnedJson["err_code"],
+                                returnedJson["err_msg"]))
                 return returnedJson
-        break
-
 
 class VdiskUser():
     def __init__(self,account,password,app_type=None):
         self.account=account
         self.password=password
-        self.token=''
+        self.token=None
         self.app_type=app_type
         self.dologid=None
 
+    def is_loged(self):
+        return self.token is not None
+
+    ## check the dologid
+    ## if the dologid is not old,return True
+    def check_dologid(self,returnedJson):
+        if returnedJson['err_code']==602:
+            self.dologid=returnedJson['dologid']
+            return False
+        return True
+            
     def get_token(self):
         url="http://openapi.vdisk.me/?m=auth&a=get_token"
         t=int(time.time())
         if self.app_type:
             self.app_type="local"
-        signature=hmac.new(App_Secret,"account="+self.account+"&appkey="+App_Key+"&password="+
-                           self.password+"&time="+repr(t),hashlib.sha256).hexdigest()
+        signature=hmac.new(App_Secret,"account="+self.account
+                           +"&appkey="+App_Key+"&password="+
+                           self.password+"&time="+
+                           repr(t),hashlib.sha256).hexdigest()
         data=dict(account=self.account,
                   password=self.password,
                   appkey=App_Key,time=t,
