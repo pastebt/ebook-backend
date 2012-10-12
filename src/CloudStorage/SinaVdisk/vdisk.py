@@ -6,9 +6,8 @@ import hmac
 import hashlib
 import time
 import logging
+import json
 
-## easy_install requests
-## or we should add https://github.com/kennethreitz/requests.git as a submodule.
 import requests
 
 App_Key="2000904490"
@@ -29,7 +28,7 @@ def Vrequest(method,**kwargs):
         response=requests.request(method.lower(),**kwargs)
         if response.json is not None:
             returnedJson=response.json
-            assert returnedJson.get("err_code")==0,"fail.error code: %s,error message: %s" \
+            assert returnedJson.get("err_code") in [0,602],"fail.error code: %s,error message: %s" \
                    %(returnedJson["err_code"],returnedJson["err_msg"].encode('utf-8'))
             logging.info('success.')
             return returnedJson
@@ -48,14 +47,6 @@ class VdiskUser():
     def is_loged(self):
         return self.token is not None
 
-    ## check the dologid
-    ## if the dologid is not old,return True
-    def check_dologid(self,returnedJson):
-        if returnedJson['err_code']==602:
-            self.dologid=returnedJson['dologid']
-            return False
-        return True
-            
     def get_token(self):
         url="http://openapi.vdisk.me/?m=auth&a=get_token"
         t=int(time.time())
@@ -72,12 +63,14 @@ class VdiskUser():
                   app_type=self.app_type)
         returnedJson=Vrequest("POST",**dict(url=url,data=data))
         self.token=returnedJson["data"]["token"]
+        return returnedJson
 
     ## keep alive
     def keep(self):
         url="http://openapi.vdisk.me/?a=keep"
         data=dict(token=self.token,dilogid=self.dologid) if self.dologid!=None \
               else dict(token=self.token)
+        time.sleep(0.5)
         returnedJson=Vrequest("POST",**dict(url=url,data=data))
         if returnedJson['err_code'] in [0,602]:
             self.dologid=returnedJson['dologid']
@@ -90,14 +83,17 @@ class VdiskUser():
         self.total=returnedJson['data']['total']
         logging.warning('used: %s'%returnedJson['data']['used'])
         logging.warning('total: %s'%returnedJson['data']['total'])
+        return returnedJson
 
     ## a token will expire after 15 minutes,
     ## so keep_token() should run about 10 to 15 minutes
     def keep_token(self):
         url="http://openapi.vdisk.me/?m=user&a=keep_token"
+        self.keep()
         data=dict(token=self.token,dologid=self.dologid)
         returnedJson=Vrequest("POST",**dict(url=url,data=data))
         self.check_dologid(returnedJson)
+        return returnedJson
 
 # handle file and dir etc.
 class VdiskFile(VdiskUser):
@@ -105,99 +101,90 @@ class VdiskFile(VdiskUser):
     ## upload and share,a file size must less than 10M
     ## there is another upload_file in vdisk api.but it donot share
     def upload_file(self,afile,dir_id=0,cover=None):
-        url="http://openapi.vdisk.me/?m=file&a=upload_file"
+        url="http://openapi.vdisk.me/?m=file&a=upload_share_file"
         if cover is None:
             cover="yes"
         files={'file':open(afile,'r')}
+        self.keep()
         data=dict(token=self.token,dir_id=dir_id,
                   cover=cover,dologid=self.dologid)
         returnedJson=Vrequest('POST',**dict(url=url,data=data,files=files))
-        if not self.check_dologid(returnedJson):
-            self.upload_file(afile,dir_id,cover)
-        
-    def create_dir(self,create_name,parent_id=0):
-        url="http://openapi.vdisk.me/?m=dir&a=create_dir"
-        data=dict(token=self.token,create_name=create_name,
-                  parent_id=parent_id,dologid=self.dologid)
+        return returnedJson
+
+    def delete_file(self,fid):
+        url="http://openapi.vdisk.me/?m=file&a=delete_file"
+        self.keep()
+        data=dict(token=self.token,fid=fid,dologid=self.dologid)
         returnedJson=Vrequest("POST",**dict(url=url,data=data))
-        if not self.check_dologid(returnedJson):
-            self.upload_file(create_name,parent_id)
-            return
-        
+        return returnedJson
+
+    def recycle_del_file(self,fid):
+        url='http://openapi.vdisk.me/?m=recycle&a=delete_file'
+        self.keep()
+        data=dict(token=self.token,fid=fid,dologid=self.dologid)
+        returnedJson=Vrequest("POST",**dict(url=url,data=data))
+        return returnedJson
+    
     def get_dir_list(self,dir_id=0):
         url="http://openapi.vdisk.me/?m=dir&a=getlist"
         data=dict(token=self.token,dir_id=dir_id)
         returnedJson=Vrequest("POST",**dict(url=url,data=data))
-        if not self.check_dologid(returnedJson):
-            self.get_dir_list(dir_id)
-            return
+        return returnedJson
                     
-    def get_file_info(fid):
+    def get_file_info(self,fid):
         url="http://openapi.vdisk.me/?m=file&a=get_file_info"
+        self.keep()
         data=dict(token=self.token,fid=fid,dologid=self.dologid)
         returnedJson=Vrequest("POST",**dict(url=url,data=data))
-        if not self.check_dologid(returnedJson):
-            self.get_file_info(fid)
-            return
-        logging.info('%s'%returnedJson['data'])
-            
-    def delete_dir(dir_id):
-        url="http://openapi.vdisk.me/?m=dir&a=delete_dir"
-        data=dict(token=self.token,dir_id=dir_id,dologid=self.dologid)
-        returnedJson=Vrequest("POST",**dict(url=url,data=data))
-        if not self.check_dologid(returnedJson):
-            self.delete_dir(dir_id)
-            return
+        return returnedJson
     
-    def delete_file(fid):
-        url="http://openapi.vdisk.me/?m=file&a=delete_file"
-        data=dict(token=self.token,fid=fid,dologid=self.dologid)
-        returnedJson=Vrequest("POST",**dict(url=url,data=data))
-        if not self.check_dologid(returnedJson):
-            self.delete_file(fid)
-            return
-
-    def recycle_del_file(fid):
-        url='http://openapi.vdisk.me/?m=recycle&a=delete_file'
-        data=dict(token=self.token,fid=fid,dologid=self.dologid)
-        returnedJson=Vrequest("POST",**dict(url=url,data=data))
-        if not self.check_dologid(returnedJson):
-            self.recycle_del_file(fid)
-            return
-    
-    def upload_with_sha1(sha1,file_name,dir_id=0):
+    def upload_with_sha1(self,sha1,file_name,dir_id=0):
         url="http://openapi.vdisk.me/?m=file&a=upload_with_sha1"
+        self.keep()
         data=dict(token=self.token,dir_id=dir_id,sha1=sha1,
                   file_name=file_name,dologid=self.dologid)
         returnedJson=Vrequest("POST",**dict(url=url,data=data))
-        if not self.check_dologid(returnedJson):
-            self.upload_with_sha1(dir_id,sha1,file_name)
-            return
+        return returnedJson
         
-    def share_file(fid):
+    def share_file(self,fid):
         url="http://openapi.vdisk.me/?m=file&a=share_file"
+        self.keep()
         data=dict(token=self.token,fid=fid,dologid=self.dologid)
         returnedJson=Vrequest("POST",**dict(url=url,data=data))
-        if not self.check_dologid(returnedJson):
-            self.share_file(fid)
-            return
-            
+        return returnedJson
+    
+    def create_dir(self,create_name,parent_id=0):
+        url="http://openapi.vdisk.me/?m=dir&a=create_dir"
+        self.keep()
+        data=dict(token=self.token,create_name=create_name,
+                  parent_id=parent_id,dologid=self.dologid)
+        returnedJson=Vrequest("POST",**dict(url=url,data=data))
+        return returnedJson
+    
+    def delete_dir(self,dir_id):
+        url="http://openapi.vdisk.me/?m=dir&a=delete_dir"
+        self.keep()
+        data=dict(token=self.token,dir_id=dir_id,dologid=self.dologid)
+        returnedJson=Vrequest("POST",**dict(url=url,data=data))
+        return returnedJson
 
-"""
-parser=argparse.ArgumentParser(description="sina vdisk")
-group=parser.add_mutually_exclusive_group()
-group.add_argument("--upload","-U",help="upload a file")
-group.add_argument("--delete","-D",help="delete a file")
-group.add_argument("--query","-Q",help="query file by key word")
+def main():
+    parser=argparse.ArgumentParser(description="Sina Vdisk")
+    group=parser.add_mutually_exclusive_group()
+    group.add_argument("--upload","-U",help="Upload a file")
+    group.add_argument("--delete","-D",help="Delete a file")
+    group.add_argument("--query","-Q",help="Query file by key word")
 
-args=parser.parse_args()
+    args=parser.parse_args()
 
-if args.upload:
-    print args.upload
-elif args.delete:
-    print args.delete
-elif args.query:
-    print args.query
-else:
-    pass
-"""
+    if args.upload:
+        print args.upload
+    elif args.delete:
+        print args.delete
+    elif args.query:
+        print args.query
+    else:
+        pass
+
+if __name__='__main__':
+    main()
