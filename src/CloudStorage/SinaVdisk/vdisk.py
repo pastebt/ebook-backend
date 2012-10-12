@@ -29,15 +29,10 @@ def Vrequest(method,**kwargs):
         response=requests.request(method.lower(),**kwargs)
         if response.json is not None:
             returnedJson=response.json
-            if returnedJson.get("err_code")==0:
-                logging.info("success.%s"%returnedJson)
-                return returnedJson
-            else:
-                logging.error("fail,returnedJson is "%returnedJson)
-                logging.error("error code: %s,error message: %s"
-                              %(returnedJson["err_code"],
-                                returnedJson["err_msg"]))
-                return returnedJson
+            assert returnedJson.get("err_code")==0,"fail.error code: %s,error message: %s" \
+                   %(returnedJson["err_code"],returnedJson["err_msg"].encode('utf-8'))
+            logging.info('success.')
+            return returnedJson
 
 class VdiskUser():
     
@@ -189,7 +184,7 @@ class VdiskFile(VdiskUser):
             
 
 """
-parser=argparse.ArgumentParser(description="Use command line to control vdisk")
+parser=argparse.ArgumentParser(description="sina vdisk")
 group=parser.add_mutually_exclusive_group()
 group.add_argument("--upload","-U",help="upload a file")
 group.add_argument("--delete","-D",help="delete a file")
