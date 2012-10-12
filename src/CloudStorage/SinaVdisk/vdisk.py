@@ -176,7 +176,7 @@ def main():
     group.add_argument("--query","-Q",help="Query file by key word")
 
     args=parser.parse_args()
-
+    
     if args.upload:
         print args.upload
     elif args.delete:
@@ -184,7 +184,7 @@ def main():
     elif args.query:
         print args.query
     else:
-        pass
+        parser.print_help()
 
-if __name__='__main__':
+if __name__=='__main__':
     main()
