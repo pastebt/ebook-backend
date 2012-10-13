@@ -85,16 +85,6 @@ class VdiskUser():
         logging.warning('total: %s'%returnedJson['data']['total'])
         return returnedJson
 
-    ## a token will expire after 15 minutes,
-    ## so keep_token() should run about 10 to 15 minutes
-    def keep_token(self):
-        url="http://openapi.vdisk.me/?m=user&a=keep_token"
-        self.keep()
-        data=dict(token=self.token,dologid=self.dologid)
-        returnedJson=Vrequest("POST",**dict(url=url,data=data))
-        self.check_dologid(returnedJson)
-        return returnedJson
-
 # handle file and dir etc.
 class VdiskFile(VdiskUser):
     
@@ -150,21 +140,6 @@ class VdiskFile(VdiskUser):
         url="http://openapi.vdisk.me/?m=file&a=share_file"
         self.keep()
         data=dict(token=self.token,fid=fid,dologid=self.dologid)
-        returnedJson=Vrequest("POST",**dict(url=url,data=data))
-        return returnedJson
-    
-    def create_dir(self,create_name,parent_id=0):
-        url="http://openapi.vdisk.me/?m=dir&a=create_dir"
-        self.keep()
-        data=dict(token=self.token,create_name=create_name,
-                  parent_id=parent_id,dologid=self.dologid)
-        returnedJson=Vrequest("POST",**dict(url=url,data=data))
-        return returnedJson
-    
-    def delete_dir(self,dir_id):
-        url="http://openapi.vdisk.me/?m=dir&a=delete_dir"
-        self.keep()
-        data=dict(token=self.token,dir_id=dir_id,dologid=self.dologid)
         returnedJson=Vrequest("POST",**dict(url=url,data=data))
         return returnedJson
 
