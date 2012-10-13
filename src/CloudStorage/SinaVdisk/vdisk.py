@@ -20,9 +20,7 @@ logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s',
 ## logging the json info
 ## and return the reponse.json
 def Vrequest(method,**kwargs):
-    if method not in ['GET','POST']:
-        logging.error("wrong method: %s"%method)
-        return
+    assert method in ['GET','POST'],"wrong method: %s"%method
     ## sometimes the api return nothing.
     while True:
         response=requests.request(method.lower(),**kwargs)
@@ -43,9 +41,6 @@ class VdiskUser():
         self.dologid=None
         self.used=None
         self.total=None
-
-    def is_loged(self):
-        return self.token is not None
 
     def get_token(self):
         url="http://openapi.vdisk.me/?m=auth&a=get_token"
@@ -94,7 +89,7 @@ class VdiskFile(VdiskUser):
         url="http://openapi.vdisk.me/?m=file&a=upload_share_file"
         if cover is None:
             cover="yes"
-        files={'file':open(afile,'r')}
+        files={'file':afile}
         self.keep()
         data=dict(token=self.token,dir_id=dir_id,
                   cover=cover,dologid=self.dologid)
@@ -128,38 +123,67 @@ class VdiskFile(VdiskUser):
         returnedJson=Vrequest("POST",**dict(url=url,data=data))
         return returnedJson
     
-    def upload_with_sha1(self,sha1,file_name,dir_id=0):
-        url="http://openapi.vdisk.me/?m=file&a=upload_with_sha1"
-        self.keep()
-        data=dict(token=self.token,dir_id=dir_id,sha1=sha1,
-                  file_name=file_name,dologid=self.dologid)
-        returnedJson=Vrequest("POST",**dict(url=url,data=data))
-        return returnedJson
-        
-    def share_file(self,fid):
-        url="http://openapi.vdisk.me/?m=file&a=share_file"
-        self.keep()
-        data=dict(token=self.token,fid=fid,dologid=self.dologid)
-        returnedJson=Vrequest("POST",**dict(url=url,data=data))
-        return returnedJson
-
 def main():
     parser=argparse.ArgumentParser(description="Sina Vdisk")
     group=parser.add_mutually_exclusive_group()
-    group.add_argument("--upload","-U",help="Upload a file")
+    group.add_argument("--auth","-A",help='log in,enter account,\
+    password and app_type,app_type is either local or sinat',nargs=3)
+    group.add_argument("--upload","-U",help="Upload a file",nargs="?",
+                       type=argparse.FileType("r"))
     group.add_argument("--delete","-D",help="Delete a file")
     group.add_argument("--query","-Q",help="Query file by key word")
-
-    args=parser.parse_args()
     
-    if args.upload:
-        print args.upload
-    elif args.delete:
-        print args.delete
-    elif args.query:
-        print args.query
+    args=parser.parse_args()
+
+    users=json.load(open('accounts.json','r'))['users']
+    length=len(users)
+    assert length>0
+
+    if args.auth:
+        newuser=dict(account=args.auth[0],password=args.auth[1],app_type=args.auth[2])
+        users.append(newuser)
+        json.dump({"users":users},open('accounts.json','w'))
+        print "add user success. re-run to operate"
+        return
+    elif any([args.upload,args.delete,args.query]):
+        account=users[length-1]['account']
+        password=users[length-1]['password']
+        app_type=users[length-1]['app_type']
+        assert all([account,password]), \
+               'please set correct account and password.'
+        user=VdiskFile(account,password,app_type)
+        user.get_token()
+        user.get_quota()
+        if args.upload:
+            user.upload_file(args.upload)
+            return
+        elif args.delete or args.query:
+            target=args.delete if args.delete else args.query
+            localList=json.load(open('fileList.json','r'))
+            if target in localList:
+                fid=localList[target]
+            else:
+                fileList=user.get_dir_list()['data']['list']
+                ##the name:id dict 
+                name_list=dict([(i['name'],i['id']) for i in fileList])
+                json.dump(name_list,open('fileList.json','w'))
+                if target in name_list:
+                    fid=name_list['target']
+                else:
+                    assert 0>1,"can't find such file : %s" \
+                               %target.encode('utf-8')
+            if args.delete:
+                user.delete_file(fid)
+                user.recycle_del_file(fid)
+                logging.info('delete file success: %s'%args.delete)
+                return
+            elif args.query:
+                url=user.get_file_info(fid)['data']['s3_url']
+                logging.info("query success: %s"%args.query)
+                print url
+                return
     else:
         parser.print_help()
-
+            
 if __name__=='__main__':
     main()
