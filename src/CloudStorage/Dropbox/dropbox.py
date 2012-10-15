@@ -97,7 +97,7 @@ def main():
 
     if args.auth:
         if args.auth == '-':
-            clt.auth(sys.stdin)
+            clt.auth(sys.stdout)
         else:
             clt.auth(open(args.auth, 'w'))
         sys.exit(0)
