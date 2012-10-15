@@ -15,6 +15,8 @@ Then next time thise script can use this key/sec pair to access
 Depenence:
 * python 2.7
 * oauth2  
-    yum install python-oauth2 for red-hat linux  
+    for red-hat linux  
+    yum install python-oauth2  
+    
     or get from source:  
     https://github.com/simplegeo/python-oauth2
