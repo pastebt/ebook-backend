@@ -138,6 +138,7 @@ def main():
         print >> sys.stderr, "Can not find", KEYS_FILENAME
         print >> sys.stderr, "you have run '--auth ", KEYS_FILENAME
         print >> sys.stderr, "'generate first"
+        sys.exit(1)
 
     if args.auth:
         print "Please submit  email address and password",
