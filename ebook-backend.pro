@@ -2,8 +2,8 @@ TEMPLATE = subdirs
 
 CONFIG += ordered
 
-SUBDIRS += CloudStorage \
-    Convert \
-    Convert/InputEpub \
-    VCS/github
+SUBDIRS += src/CloudStorage \
+    src/Convert \
+    src/Convert/InputEpub \
+    src/VCS/github
 
