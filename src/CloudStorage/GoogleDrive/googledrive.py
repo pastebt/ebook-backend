@@ -47,18 +47,19 @@ class GoogleDriveClient(object):
             print >> sys.stderr, "' to get auth before any operation"
             sys.exit(1)
         self.web = self.token['web']
-        edt = datetime.strptime(self.token['before_this_time'],
+        edt = datetime.strptime(self.token.get('before_this_time',
+                                               "2000-01-01 00:00:00"),
                                 "%Y-%m-%d %H:%M:%S")
         if edt < datetime.today():
             self.refresh_token()
-            json.dump(open(infn, 'w'))
+            json.dump(self.token, open(infn, 'w'))
 
     def _update_token(self, ret):
         dat = json.loads(ret)
-        for k, v in dat:
+        for k, v in dat.items():
             self.token[k] = v
         edt = datetime.today() + timedelta(seconds=self.token['expires_in']/2)
-        self.token['before_this_time'] = etd.strftime("%F %T")
+        self.token['before_this_time'] = edt.strftime("%F %T")
 
     def refresh_token(self):
         url = "https://accounts.google.com/o/oauth2/token"
@@ -99,27 +100,39 @@ class GoogleDriveClient(object):
         ret = self.http("POST", url, data,
                         {"Content-Type": "application/x-www-form-urlencoded"})
         self._update_token(ret)
+        json.dump(self.token, open(infn, 'w'))
 
-    def query(self, word):
-        res = self.get("https://one.ubuntu.com/api/file_storage/"
-                       "v1/~/Ubuntu%20One?include_children=true")
-        data = json.loads(res)
-        #print data['children'][0]['content_path']
-        for child in data['children']:
-            if child.get('kind') != 'file':
-                continue
-            fn = child.get('content_path')
-            if not fn:
-                continue
-            fn = os.path.basename(fn)
-            if word and word in fn:
-                print fn
+    def _query(self, q):
+        url = "https://www.googleapis.com/drive/v2/files?" + q
+        a = self.token['token_type'] + " " + self.token['access_token']
+        ret = self.http("GET", url, "", {"authorization": a})
+        return json.loads(ret)['items']
+        
+    def query(self, word, limit=100):
+        # can not use contain, it is a bug:
+        # http://stackoverflow.com/questions/12695434/
+        # google-drive-title-contains-query-not-working-as-expected
+        q = urllib.urlencode({#"q": "title contains 'bcd'",
+                              "maxResults": limit})
+        files = self._query(q)
+        for info in files:
+            if word in info['title'] and info["kind"] == "drive#file":
+                print info['title']
 
     def delete(self, filename):
         name = os.path.basename(filename)
-        url = ("https://one.ubuntu.com/api/file_storage/v1"
-               "/~/Ubuntu%20One/" + urllib.quote(name))
-        self.put("DELETE", url)
+        q = urllib.urlencode({"q": "title = '%s'" % name.replace("'", r"\'"),
+                              "maxResults": 2})
+        try:
+            files = self._query(q)
+            fid = files[0]['id']
+        except (KeyError, IndexError), e:
+            print >> sys.stderr, name, "not found"
+            sys.exit(1)
+        url = "https://www.googleapis.com/drive/v2/files/" + fid
+        a = self.token['token_type'] + " " + self.token['access_token']
+        ret = self.http("DELETE", url, "", {"authorization": a})
+        print ret
 
     def upload(self, filename):
         name = os.path.basename(filename)
