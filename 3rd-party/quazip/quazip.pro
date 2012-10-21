@@ -3,7 +3,7 @@ CONFIG += qt warn_on
 QT -= gui
 DEPENDPATH += .
 INCLUDEPATH += . ../zlib-1.2.7
-VERSION = 1.0.0
+#VERSION = 1.0.0
 
 DEFINES += QUAZIP_BUILD
 CONFIG(staticlib): DEFINES += QUAZIP_STATIC

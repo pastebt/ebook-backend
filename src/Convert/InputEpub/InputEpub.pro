@@ -13,7 +13,7 @@ CONFIG   += console
 CONFIG   -= app_bundle
 
 TEMPLATE = app
-
+DESTDIR = $$PWD
 
 SOURCES += main.cpp
 
@@ -21,5 +21,5 @@ win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../3rd-party/qua
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../3rd-party/quazip/debug/ -lquazip
 else:unix:!symbian: LIBS += -L$$OUT_PWD/../../../3rd-party/quazip/ -lquazip
 
-INCLUDEPATH += $$PWD/../../../3rd-party/quazip
+INCLUDEPATH += $$PWD/../../../3rd-party/quazip $$PWD/../../../3rd-party/zlib-1.2.7
 DEPENDPATH += $$PWD/../../../3rd-party/quazip
