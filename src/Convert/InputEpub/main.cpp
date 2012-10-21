@@ -14,7 +14,7 @@ void print_usage()
 {
     cout << "Copyright (C) 2012 Fan Yang <missdeer@gmail.com>\n"
          << "epub filename.epub [-d destine_directory]"
-            << endl;
+         << endl;
 }
 
 bool convert(const QString& epub, const QString destineDir)
@@ -47,7 +47,7 @@ bool convert(const QString& epub, const QString destineDir)
         }
     }
     if(zip.getZipError()==UNZ_OK) {
-      // ok, there was no error
+        // ok, there was no error
     }
 
     zip.close();
@@ -58,8 +58,7 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
-    if (argc != 2 && argc != 4)
-    {
+    if (argc != 2 && argc != 4) {
         print_usage();
         return -1;
     }
