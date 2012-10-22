@@ -1,0 +1,65 @@
+﻿KINDLEGEN SOFTWARE END USER LICENSE AGREEMENT
+This KindleGen Software End User License Agreement is a legal agreement between Amazon Digital Services, Inc.  (“Amazon” and, together with Amazon’s Affiliates, “we” or “us”) and the individual or entity accepting this Agreement (“you”). 
+
+Please read this Agreement, all rules and policies related to the KindleGen Software  and the Amazon.com Privacy Notice (located at http://www.amazon.com/gp/help/customer/display.html/ref=footer_privacy?ie=UTF8&nodeId=468496) (collectively, the "Agreement”) carefully before downloading or using the KindleGen Software.  This agreement applies the KindleGen Software and to any and all updates, modifications and enhancements to the KindleGen Software that we may provide (collectively, the “Software”).  
+
+If you download or use the Software, you will be bound by the terms of this Agreement.  If you do not or cannot agree to the terms of this Agreement, do not attempt to or download or use the Software.
+
+LICENSE
+The Software allows you to convert documents existing in certain file types or formats to the Kindle Publishing Format.  Subject to your compliance with all of the terms and conditions of this Agreement, Amazon grants to you a non-exclusive, non-assignable, non-sublicensable and non-transferable license to download, install and use the Software on a server, desktop or laptop computer for your use (which may be personal or commercial) for the purpose of converting documents to the Kindle Publishing Format.  You may not separate any individual component of the Software for use on another device or computer, may not transfer it for use on another device or use it, or any portion of it, over a network and may not sell, rent, lease, lend, distribute or sublicense or otherwise assign any rights to the Software in whole or in part. All rights not expressly granted to you are reserved by Amazon.
+
+RESERVATION OF RIGHTS; NO REVERSE ENGINEERING, DECOMPILATION OR DISASSEMBLY
+The Software is licensed, not sold. You may not, and you will not encourage, assist or authorize any other person to, copy, modify, create derivate works of, distribute, resell, reverse engineer, decompile or disassemble the Software, whether in whole or in part, except that you may make one copy of the Software for back-up purposes.   
+
+NO ILLEGAL USE
+The Software may be used only for lawful purposes and in a lawful manner, and you agree to comply with all applicable laws and regulations.  Amazon may investigate any reported violation of its policies and take any action it deems appropriate, including terminating your license to use the Software without notice.   
+
+COPYRIGHT
+The Software is the exclusive property of Amazon and protected by U.S. and international copyright laws.  All content included on the Software, such as text, graphics, logos, button icons, and images, is the property of Amazon or our content suppliers and licensors, and is separately and in the aggregate protected by United States and international copyright laws.   
+
+TRADEMARKS
+AMAZON, the AMAZON logo, Kindle and other marks indicated on the Software are trademarks of Amazon or its affiliates in the United States and other countries.  Other Amazon graphics, logos, button icons, scripts, and service names are trademarks or trade dress of Amazon or its affiliates.  Amazon's trademarks and trade dress may not be used in connection with any product or service that is not Amazon's, in any manner that is likely to cause confusion among users, or in any manner that disparages or discredits Amazon or its affiliates.  All other trademarks not owned by Amazon or its affiliates that appear on the Software are the property of their respective owners, who may or may not be affiliated with, connected to, or sponsored by Amazon or its affiliates. 
+
+PATENTS
+The Software and/or methods used in association with the Software may be covered by one or more patents or pending patent applications.
+
+EXPORT REGULATIONS  
+You agree to comply with all export and re-export restrictions and regulations of the United States Department of Commerce and other United States and foreign agencies and authorities, and not to transfer, or encourage, assist or authorize the transfer of the Software to a prohibited country or otherwise in violation of any such restrictions or regulations. If you are a U.S. Government end user, we are licensing the Software to you as a "Commercial Item" as that term is defined in the U.S. Code of Federal Regulations (see 48 C.F.R. § 2.101), and the rights we grant you to the Software are the same as the rights we grant to all others under this Agreement.
+
+TERMINATION  
+Your rights under this Agreement will automatically terminate without notice from Amazon if you fail to comply with any term of this Agreement. In case of such termination, you must cease all use of the Software. Amazon's failure to insist upon or enforce your strict compliance with this Agreement will not constitute a waiver of any of its rights.
+
+DISCLAIMER OF WARRANTY
+YOU EXPRESSLY ACKNOWLEDGE AND AGREE THAT USE OF THE SOFTWARE IS AT YOUR SOLE RISK.  THE SOFTWARE IS PROVIDED BY AMAZON ON AN "AS IS" AND "AS AVAILABLE" BASIS.  TO THE EXTENT NOT PROHIBITED BY LAW, AMAZON EXPRESSLY DISCLAIMS AND MAKES NO REPRESENTATIONS OR WARRANTIES OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, ACCURACY, QUIET ENJOYMENT AND NON-INFRINGEMENT OF THIRD-PARTY RIGHTS.   AMAZON DOES NOT WARRANT THAT THE SOFTWARE IS FREE OF VIRUSES OR OTHER HARMFUL COMPONENTS.  
+
+LIMITATIONS OF LIABILITY
+TO THE EXTENT NOT PROHIBITED BY LAW, IN NO EVENT WILL AMAZON, OR ANY OF ITS AFFILIATES, OR ANY OF THEIR OFFICERS, DIRECTORS, EMPLOYEES, AGENTS, REPRESENTATIVES, SUPPLIERS OR LICENSORS BE LIABLE TO YOU FOR ANY INCIDENTAL OR CONSEQUENTIAL DAMAGES FOR BREACH OF ANY EXPRESS OR IMPLIED WARRANTY, BREACH OF CONTRACT, NEGLIGENCE, STRICT LIABILITY OR ANY OTHER LEGAL THEORY RELATED TO THE SOFTWARE, INCLUDING, BUT NOT LIMITED TO, ANY DAMAGES ARISING OUT OF LOSS OF PROFITS, REVENUE, DATA OR USE OF THE SOFTWARE OR ANY ASSOCIATED PRODUCT, EVEN IF AMAZON HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.  IN ANY CASE, AMAZON'S AGGREGATE LIABILITY UNDER THIS AGREEMENT SHALL BE LIMITED TO FIVE DOLLARS (US$5.00).  CERTAIN STATE LAWS DO NOT ALLOW LIMITATIONS ON IMPLIED WARRANTIES OR THE EXCLUSION OR LIMITATION OF CERTAIN DAMAGES.  IF THESE LAWS APPLY TO YOU, SOME OR ALL OF THE ABOVE DISCLAIMERS, EXCLUSIONS, OR LIMITATIONS MAY NOT APPLY TO YOU AND YOU MAY HAVE ADDITIONAL RIGHTS. 
+
+WASHINGTON LAW APPLIES  
+The laws of the state of Washington, without regard to principles of conflict of laws, will govern this Agreement and any dispute of any sort that might arise between you and Amazon.   
+
+DISPUTES
+Any dispute relating in any way to the Software in which the aggregate total claim for relief sought on behalf of one or more parties exceeds $7,500 shall be adjudicated in any state or federal court in King County, Washington, and you consent to exclusive jurisdiction and venue in such courts.  
+
+ENTIRE AGREEMENT
+
+This Agreement constitutes the entire agreement of the parties with respect to the subject matter hereto and supersedes and cancels all prior and contemporaneous agreements, claims, representations and understandings of the parties in connection with the subject matter, hereof, oral or written.
+
+AMENDMENT
+
+Amazon reserves the right to amend any of the terms of this Agreement at its sole discretion by posting the revised terms on the Amazon.com website. Your continued use of the Software after the effective date of any such amendment will be deemed your agreement to be bound by such amendment. 
+
+SEVERABILITY
+
+If any provisions of this Agreement shall be deemed unlawful, void, or for any reason unenforceable, then that provision shall be deemed severable from these terms and conditions and shall not affect the validity and enforceability of any remaining provisions.
+
+NO WAIVER
+
+Amazon's failure to enforce the strict performance of any provision of this Agreement will not constitute a waiver of Amazon's right to subsequently enforce such provisions or any other provisions of this Agreement.  No waiver of any provision of this Agreement shall be effective unless in writing.
+
+CONTACT INFORMATION  
+
+For communications concerning this Agreement, you may contact Amazon by writing to Amazon.com, Attn: Legal Department, 1200 12th Avenue South, Suite 1200, Seattle, WA, 98144-2734.
+
+ © 2009 Amazon Technologies, Inc. or its affiliates.  All rights reserved.  Amazon, the Amazon a logo, the AmazonKindle logo and Kindle are trademarks of Amazon Technologies, Inc. or its affiliates.  
+

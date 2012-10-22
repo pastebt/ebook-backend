@@ -1,0 +1,4 @@
+CFBundleName = "kindlegen";
+CFBundleShortVersionString = "1.1";
+CFBundleGetInfoString = "kindlegen version 1.1 Copyright 2010 eBook Architects";
+NSHumanReadableCopyright = "Copyright 2010 eBook Architects.";
