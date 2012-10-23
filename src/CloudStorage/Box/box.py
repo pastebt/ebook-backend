@@ -4,16 +4,10 @@ import os
 import re
 import sys
 import json
-import base64
-import urllib2
 import httplib
 import argparse
-from hashlib import md5
-from getpass import getpass
-from urllib import urlencode
+from urlparse import urlparse
 from mimetypes import guess_type
-from urlparse import urlparse, parse_qs
-from datetime import datetime, timedelta
 from email.mime.multipart import MIMEMultipart
 from email.mime.nonmultipart import MIMENonMultipart
 from pprint import pprint
@@ -38,7 +32,8 @@ class BoxClient(object):
     def check_auth(self, infn):
         self.token = json.load(open(infn))
         if not self.token.get("auth_token"):
-            print >> sys.stderr, "Has no auth_token, you should run --auth first"
+            print >> sys.stderr, "Has no auth_token,",
+            print >> sys.stderr, "you should run --auth first"
             sys.exit(1)
 
     def acquire_token(self, infn):
@@ -148,7 +143,7 @@ class BoxClient(object):
         del msg["MIME-Version"]
         msg.set_payload(open(filename).read())
         message.attach(msg)
-        
+
         msg = MIMENonMultipart("text", "plain")
         msg.add_header('Content-Disposition', 'form-data; name="folder_id"')
         del msg["Content-Type"]
