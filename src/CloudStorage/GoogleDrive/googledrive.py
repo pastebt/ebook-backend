@@ -57,8 +57,8 @@ class GoogleDriveClient(object):
             print >> sys.stderr, e
             t = {}
         if 'access_token' not in t or 'refresh_token' not in t:
-            print >> sys.stderr, "you have run '--auth ", infn
-            print >> sys.stderr, "' to get auth before any operation"
+            print >> sys.stderr, "you have run '--auth %s'" % infn
+            print >> sys.stderr, "to get auth before any operation"
             sys.exit(1)
         self.web = self.token['web']
         edt = datetime.strptime(self.token.get('before_this_time',
@@ -132,16 +132,6 @@ class GoogleDriveClient(object):
             if word in info['title'] and info["kind"] == "drive#file":
                 pprint({"title": info['title'], "file_id": info['id']})
 
-    def auth_http(self, act, url, data="", hd={}):
-        host = urlparse(url)[1]
-        conn = httplib.HTTPSConnection(host)
-        if 'authorization' not in hd:
-            a = self.token['token_type'] + " " + self.token['access_token']
-            hd['authorization'] = a
-        conn.request(act, url, data, hd)
-        res = conn.getresponse()
-        return res
-
     def delete(self, filename):
         name = os.path.basename(filename)
         q = urlencode({"q": "title = '%s'" % name.replace("'", r"\'"),
@@ -190,7 +180,6 @@ class GoogleDriveClient(object):
         res = self.auth_http("POST", url, body, hd)
         ret = res.read()
         pprint(ret)
-        return 
 
 
 def main():
