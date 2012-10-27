@@ -148,6 +148,21 @@ class GoogleDriveClient(object):
         ret = self.auth_http("DELETE", url).read()
         pprint(ret)
 
+    def fetch(self, filename, fout=sys.stdout):
+        name = os.path.basename(filename)
+        q = urlencode({"q": "title = '%s'" % name.replace("'", r"\'"),
+                       "maxResults": 2})
+        try:
+            files = self._query(q)
+            url = files[0]['downloadUrl']
+        except (KeyError, IndexError), e:
+            print >> sys.stderr, name, "not found"
+            sys.exit(1)
+        #a = self.token['token_type'] + " " + self.token['access_token']
+        #ret = self.http("DELETE", url, "", {"authorization": a})
+        ret = self.auth_http("GET", url).read()
+        fout.write(ret)
+
     def upload(self, filename):
         name = os.path.basename(filename)
         size = os.path.getsize(filename)
@@ -190,6 +205,7 @@ def main():
     group.add_argument("--query", "-Q", help="Query file by key word")
     group.add_argument("--upload", "-U", help="Upload a file")
     group.add_argument("--delete", "-D", help="Delete a file")
+    group.add_argument("--fetch", "-F", help="Download a file")
 
     args = parser.parse_args()
     clt = GoogleDriveClient()
@@ -198,7 +214,7 @@ def main():
         clt.acquire_token(KEYS_FILENAME)
         sys.exit(0)
 
-    if args.upload or args.delete or args.query:
+    if args.upload or args.delete or args.query or args.fetch:
         clt.check_auth(KEYS_FILENAME)
     else:
         parser.print_help()
@@ -210,6 +226,8 @@ def main():
         clt.delete(args.delete)
     elif args.query:
         clt.query(args.query)
+    elif args.fetch:
+        clt.fetch(args.fetch)
     else:
         parser.print_help()
 
