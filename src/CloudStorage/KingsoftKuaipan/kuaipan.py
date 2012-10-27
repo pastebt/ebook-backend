@@ -1,4 +1,5 @@
 #! /usr/bin/python
+#coding:utf-8
 
 import os
 import sys
@@ -83,19 +84,36 @@ class KuaiPanClient(object):
         fout.write(json.dumps(dat))
 
     def query(self, word):
-        res = self.get("https://one.ubuntu.com/api/file_storage/"
-                       "v1/~/Ubuntu%20One?include_children=true")
-        data = json.loads(res)
-        #print data['children'][0]['content_path']
-        for child in data['children']:
-            if child.get('kind') != 'file':
+        req, host = self.sign_url("https://openapi.kuaipan.cn/1/"
+                                  "metadata/app_folder/")
+        res = urllib2.urlopen(req.to_url())
+        data = json.load(res)
+        print data
+        for f in data['files']:
+            if f.get('type') != 'file' or f.get('is_deleted'):
                 continue
-            fn = child.get('content_path')
+            fn = f.get('name')
             if not fn:
                 continue
             fn = os.path.basename(fn)
             if word and word in fn:
                 print fn
+
+    def fetch(self, filename):
+        # get download locate
+        res = urllib2.urlopen("http://api-content.dfs.kuaipan.cn"
+                              "/1/fileops/upload_locate")
+        print res.read()
+        return
+
+        name = os.path.basename(filename)
+        req, host = self.sign_url("https://api-content.dfs.kuaipan.cn"
+                                  "/1/fileops/download_file")
+        url = req.to_url() + "&" + urllib.urlencode({"root": "app_folder",
+                                                     "path": name})
+        print url
+        res = urllib2.urlopen(url)
+        print res.read()
 
     def put(self, act, url, mime="", data=""):
         sreq, host = self.sign_url(url)
@@ -138,6 +156,7 @@ def main():
     group.add_argument("--query", "-Q", help="Query file by key word")
     group.add_argument("--upload", "-U", help="Upload a file")
     group.add_argument("--delete", "-D", help="Delete a file")
+    group.add_argument("--fetch", "-F", help="Download a file")
 
     args = parser.parse_args()
     clt = KuaiPanClient()
@@ -150,7 +169,7 @@ def main():
             clt.acquire_token(open(args.auth, 'w'))
         sys.exit(0)
 
-    if args.upload or args.delete or args.query:
+    if args.upload or args.delete or args.query or args.fetch:
         # should get token from some secure place
         # here just hard code for testing
         clt.set_tokens(open(KEYS_FILENAME))
@@ -164,6 +183,8 @@ def main():
         clt.delete(args.delete)
     elif args.query:
         clt.query(args.query)
+    elif args.fetch:
+        clt.fetch(args.fetch)
     else:
         parser.print_help()
 

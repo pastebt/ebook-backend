@@ -123,6 +123,14 @@ class UbuntuOneClient(object):
             mime = mime[0]
         self.put("PUT", url, mime, open(filename))
 
+    def fetch(self, filename):
+        #/api/file_storage/v1/(content_path)
+        name = os.path.basename(filename)
+        url = ("https://files.one.ubuntu.com/content"
+               "/~/Ubuntu%20One/" + urllib.quote(name))
+        res = self.get(url)
+        sys.stdout.write(res)
+
 
 def main():
     parser = argparse.ArgumentParser(description="Use command line to "
@@ -132,21 +140,24 @@ def main():
     group.add_argument("--query", "-Q", help="Query file by key word")
     group.add_argument("--upload", "-U", help="Upload a file")
     group.add_argument("--delete", "-D", help="Delete a file")
+    group.add_argument("--fetch", "-F", help="Download a file")
 
     args = parser.parse_args()
     clt = UbuntuOneClient()
 
-    if not os.path.isfile(KEYS_FILENAME):
-        print >> sys.stderr, "Can not find", KEYS_FILENAME
-        print >> sys.stderr, "you have run '--auth ", KEYS_FILENAME
-        print >> sys.stderr, "'generate first"
-        sys.exit(1)
-
     if args.auth:
+        #if not os.path.isfile(KEYS_FILENAME):
+        #    print >> sys.stderr, "Can not find", KEYS_FILENAME
+        #    print >> sys.stderr, "you have run '--auth ", KEYS_FILENAME
+        #    print >> sys.stderr, "'generate first"
+        #    sys.exit(1)
+
         print "Please submit  email address and password",
         print "to verify UbuntiOne account"
         email = raw_input("email:")
         passd = getpass()
+        print email
+        print passd
         # should save token into save place
         if args.auth == '-':
             clt.acquire_token(email, passd)
@@ -154,7 +165,7 @@ def main():
             clt.acquire_token(email, passd, open(args.auth, 'w'))
         sys.exit(0)
 
-    if args.upload or args.delete or args.query:
+    if args.upload or args.delete or args.query or args.fetch:
         # should get token from some secure place
         # here just hard code for testing
         clt.set_tokens(open(KEYS_FILENAME))
@@ -168,6 +179,8 @@ def main():
         clt.delete(args.delete)
     elif args.query:
         clt.query(args.query)
+    elif args.fetch:
+        clt.fetch(args.fetch)
     else:
         parser.print_help()
 
