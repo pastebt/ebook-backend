@@ -1,9 +1,11 @@
-qunpin
+﻿群品「群英荟萃，品书真味」
 =============
+阅读是美的，阅读排版精美的电子书更是一种精神上的愉悦，但这种愉悦却不是那么容易得到的。如今排版精美、没有错别字的电子书实在是凤毛麟角，读到 一本错别字与错误标点符号连篇的书，更是一种难言的痛如鲠在喉。为了改变这一现状，我们寻找有志之士加入「群品」网站的开发队伍：
 
-This project includes several sub-projects, here we can see there are ebook file converting, cloud storage synchronization, version control service integrated and so on.
+它允许分工输入图书内容，解决一个人精校电子书耗费大量时间和精力（比如台湾的[好读网站](http://www.haodoo.net/)）。 然后将分工输入的版本放在网站上在线阅读、在线编辑，当大家发现错别字或者翻译不好的部分，可以马上编辑产生一个新版本，或者返回历史版本，就像 wikipedia 改错功能。看这本书的人越多，错别字就越少，久而久之，这本书就变成精较版本了！在线编辑也可以添加图片，借助 html5 和 css3，完成复杂和精美的排版，后台程序随时根据版本生成对应的 mobi（KF8） ／ EPUB 或者其他的格式（如 word，pdf 等）。支持订阅功能，每周邮件推荐好书等等。
 
-I'm going to continue this project development, and use golang to handle all use cases.
+要实现这个系统不是一朝一夕的事情，也不是凭一人之力就能完成的任务，但始终不是不可能完成的任务，只要大家齐心合力就能做好这个事！希望大 家发表自己的看法，讨论一些可行性，也分享一下自己的想法，如果可能我们就组成一个团队，利用业余时间完成这个事情，保不准能在无意间改变中国的出版业与 国民的阅读热情。如果真是这样，那大家都是功德无量的菩萨！如果您有兴趣参与这个项目或者有很好的建议，请访问 开发者 google group，或者通过邮件列表 qunpin@googlegroups.com 联系我们。
 
+群品网起源： 群品网起源与我的一个美好的愿景。
 
-Dev-Forum: https://groups.google.com/forum/#!forum/qunpin
+群品网联系方式： 任何时候，关于群品网的意见，你可以在我们的开发者论坛里发帖: https://groups.google.com/forum/#!forum/qunpin
